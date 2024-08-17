@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { KEY } from "../config";
+
+
+
 
 export function useMovies(query) {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const apiKey = (process.env.REACT_APP_API_KEY || '').replace(/;$/, '')
+
   useEffect(
     function () {
       const controller = new AbortController();
@@ -13,7 +18,7 @@ export function useMovies(query) {
           setIsLoading(true);
           setError("");
           const result = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            `http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`,
             { signal: controller.signal }
           );
           if (!result.ok)
@@ -41,7 +46,7 @@ export function useMovies(query) {
         controller.abort();
       };
     },
-    [query]
+    [query, apiKey]
   );
   return { movies, isLoading, error };
 }
